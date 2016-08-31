@@ -23,7 +23,7 @@ namespace Electrophoresis
 
 		private void analysisClick(object sender, RoutedEventArgs e)
 		{
-			throw new NotImplementedException();
+			var result = new Electropherogram(textBoxImagePath.Text);
 		}
 
 		private void browseFileClick(object sender, RoutedEventArgs e)
