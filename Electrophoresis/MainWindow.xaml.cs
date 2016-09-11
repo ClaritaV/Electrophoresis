@@ -24,6 +24,13 @@ namespace Electrophoresis
 		private void analysisClick(object sender, RoutedEventArgs e)
 		{
 			var result = new Electropherogram(textBoxImagePath.Text);
+			var bitmap = new System.Drawing.Bitmap(textBoxImagePath.Text);
+			var canvas = System.Drawing.Graphics.FromImage(bitmap);
+			foreach (var seed in result.Seeds)
+			{
+				canvas.DrawRectangle(System.Drawing.Pens.Red, seed.Left, 0, seed.Right-seed.Left, bitmap.Height);
+			}
+			imagePreview.Source = bitmap.ToSource();
 		}
 
 		private void browseFileClick(object sender, RoutedEventArgs e)

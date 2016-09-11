@@ -55,6 +55,7 @@
       <SubType>Designer</SubType>
     </ApplicationDefinition>
     <Compile Include="BitmapHelper.cs" />
+    <Compile Include="ImageConverter.cs" />
     <Compile Include="Protein.cs" />
     <Compile Include="Seed.cs" />
     <Page Include="MainWindow.xaml">
