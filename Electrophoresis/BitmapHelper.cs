@@ -15,7 +15,7 @@ namespace Electrophoresis
 					for (int y = 0; y < bitmap.Height; y++)
 					{
 						var color = bitmap.GetPixel(x, y);
-						data[x, y] = color.GetSaturation();
+						data[x, y] = color.GetBrightness();
 					}
 				// возврат результата загрузки
 				return data;

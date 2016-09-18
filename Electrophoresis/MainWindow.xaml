@@ -7,7 +7,7 @@
 			<DockPanel LastChildFill="True">
 				<Button Margin="5" Padding="5,2,5,2" DockPanel.Dock="Right" Click="showImageClick">Показать</Button>
 				<Button Margin="5" ToolTip="Выбрать файл" Padding="5,2,5,2" DockPanel.Dock="Right" Click="browseFileClick">...</Button>
-				<TextBox Margin="5" Name="textBoxImagePath" />
+				<TextBox Margin="5" Name="textBoxImagePath" Text="E:\Today\Светушка\DemoSeeds\test.jpg"/>
 			</DockPanel>
 		</GroupBox>
 		<Button Margin="5" DockPanel.Dock="Bottom" HorizontalAlignment="Center" Click="analysisClick" Padding="5,2,5,2">Выполнить анализ</Button>

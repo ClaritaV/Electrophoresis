@@ -6,7 +6,8 @@ namespace Electrophoresis
 {
 	public class Electropherogram
 	{
-		public const double proteinSaturationLevel = 0.011;
+		public const double brightnessLevel = 0.022;//4 / 196
+
 		public BitmapImage Image
 		{ get { return image; } }
 
@@ -26,31 +27,31 @@ namespace Electrophoresis
 		{
 			var data = BitmapHelper.LoadImage(fileName);
 
-			float saturationPrevious = 0, saturationCurrent;
 			int xProteinStart = 0;
-			for (var y = 0; y < data.GetLength(1); y++)
+			float sumDeltaPrevios = 0;
+			for (var y = 1; y < data.GetLength(1); y++)
 			{
-				saturationPrevious += data[0, y];
+				sumDeltaPrevios += Math.Abs(data[0, y] - data[0, y - 1]);
 			}
 
 			for (var x = 1; x < data.GetLength(0); x++)
 			{
-				saturationCurrent = 0;
-				for (var y = 0; y < data.GetLength(1); y++)
+				float sumDelta = 0;
+				int heigth = data.GetLength(1) - 1;
+				for (var y = 1; y < data.GetLength(1); y++)
 				{
-					saturationCurrent += data[x, y];
+					sumDelta += Math.Abs(data[x, y] - data[x, y - 1]);
 				}
-				if (saturationCurrent/data.GetLength(1) < proteinSaturationLevel &&
-				    saturationPrevious/data.GetLength(1) > proteinSaturationLevel)
+
+				if (sumDeltaPrevios / heigth < brightnessLevel && sumDelta / heigth > brightnessLevel) //previous is white row, current - with proteins
 				{
 					xProteinStart = x;
 				}
-				else if (saturationCurrent / data.GetLength(1) > proteinSaturationLevel &&
-					saturationPrevious / data.GetLength(1) < proteinSaturationLevel)
+				else if (sumDeltaPrevios / heigth > brightnessLevel && sumDelta / heigth < brightnessLevel) //previous row contains protein, current - does not
 				{
 					Seeds.Add(new Seed(xProteinStart, x));
 				}
-				saturationPrevious = saturationCurrent;
+				sumDeltaPrevios = sumDelta;
 			}
 
 			image = new BitmapImage(new Uri(fileName));
