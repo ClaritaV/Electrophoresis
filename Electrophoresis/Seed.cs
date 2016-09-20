@@ -14,12 +14,26 @@ namespace Electrophoresis
 		{ get { return right; } }
 
 		private readonly IList<Protein> proteins = new List<Protein>();
-		private readonly int left, right;
+		private int left, right;
 
 		public Seed(int left, int right)
 		{
 			this.left = left;
 			this.right = right;
 		}
+
+		public void InflateSize()
+		{
+			left += InflateDelta;
+			right -= InflateDelta;
+		}
+
+		public void RestoreSize()
+		{
+			left -= InflateDelta;
+			right += InflateDelta;
+		}
+
+		public const int InflateDelta = 2;
 	}
 }

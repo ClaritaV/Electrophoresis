@@ -6,7 +6,8 @@ namespace Electrophoresis
 {
 	public class Electropherogram
 	{
-		public const double brightnessLevel = 0.022;//4 / 196
+		public const double brightnessLevel = 0.022;
+		public const double proteinBrightnessLevel = 0.35;
 
 		public BitmapImage Image
 		{ get { return image; } }
@@ -27,17 +28,18 @@ namespace Electrophoresis
 		{
 			var data = BitmapHelper.LoadImage(fileName);
 
-			int xProteinStart = 0;
+			int xSeedStart = 0;
 			float sumDeltaPrevios = 0;
 			for (var y = 1; y < data.GetLength(1); y++)
 			{
 				sumDeltaPrevios += Math.Abs(data[0, y] - data[0, y - 1]);
 			}
 
+			int heigth = data.GetLength(1) - 1;
+
 			for (var x = 1; x < data.GetLength(0); x++)
 			{
 				float sumDelta = 0;
-				int heigth = data.GetLength(1) - 1;
 				for (var y = 1; y < data.GetLength(1); y++)
 				{
 					sumDelta += Math.Abs(data[x, y] - data[x, y - 1]);
@@ -45,13 +47,60 @@ namespace Electrophoresis
 
 				if (sumDeltaPrevios / heigth < brightnessLevel && sumDelta / heigth > brightnessLevel) //previous is white row, current - with proteins
 				{
-					xProteinStart = x;
+					xSeedStart = x;
 				}
 				else if (sumDeltaPrevios / heigth > brightnessLevel && sumDelta / heigth < brightnessLevel) //previous row contains protein, current - does not
 				{
-					Seeds.Add(new Seed(xProteinStart, x));
+					Seeds.Add(new Seed(xSeedStart, x));
 				}
 				sumDeltaPrevios = sumDelta;
+			}
+
+			foreach (var seed in Seeds)
+			{
+				// сужение столбца
+				seed.InflateSize();
+				
+				// расчёт минимума и максимума яркости
+				float minValue = float.MaxValue, maxValue = float.MinValue;
+				var allValues = new List<float>(data.GetLength(1));
+				for (int y = 0; y < data.GetLength(1); y++)
+				{
+					float value = 0;
+					for (int x = seed.Left; x < seed.Right; x++)
+					{
+						value += data[x, y];
+					}
+					minValue = Math.Min(minValue, value);
+					maxValue = Math.Max(maxValue, value);
+					allValues.Add(value);
+				}
+
+				// нормирование значений
+				for (int v = 0; v < allValues.Count; v++)
+				{
+					allValues[v] = (allValues[v] - minValue)/(maxValue - minValue);
+				}
+
+				int yProteinStart = 0;
+				sumDeltaPrevios = allValues[0];
+				for (int y = 1; y < data.GetLength(1); y++)
+				{
+					float sumDelta = allValues[y];
+
+					if (sumDeltaPrevios > proteinBrightnessLevel && sumDelta < proteinBrightnessLevel)
+					{
+						yProteinStart = y;
+					}
+					else if (sumDeltaPrevios < proteinBrightnessLevel && sumDelta > proteinBrightnessLevel)
+					{
+						seed.Proteins.Add(new Protein(yProteinStart, y));
+					}
+					sumDeltaPrevios = sumDelta;
+				}
+
+				// сужение столбца
+				seed.RestoreSize();
 			}
 
 			image = new BitmapImage(new Uri(fileName));

@@ -29,6 +29,10 @@ namespace Electrophoresis
 			foreach (var seed in result.Seeds)
 			{
 				canvas.DrawRectangle(System.Drawing.Pens.Red, seed.Left, 0, seed.Right-seed.Left, bitmap.Height);
+				foreach (var protein in seed.Proteins)
+				{
+					canvas.DrawRectangle(System.Drawing.Pens.LimeGreen, seed.Left + Seed.InflateDelta, protein.Top, seed.Right - seed.Left - Seed.InflateDelta * 2, protein.Bottom - protein.Top);
+				}
 			}
 			imagePreview.Source = bitmap.ToSource();
 		}
